@@ -122,7 +122,7 @@ async function callOpenAI({ apiKey, model, messages }) {
 
 (async function main() {
   const apiKey = ensureEnv("OPENAI_API_KEY");
-  const model = (process.env.OPENAI_MODEL && process.env.OPENAI_MODEL.trim()) || "gpt-4.1-mini";
+  const model = (process.env.OPENAI_MODEL && process.env.OPENAI_MODEL.trim()) || "gpt-4o-mini";
 
   const timestamp = nowIso();
   const git = getGitContext();
