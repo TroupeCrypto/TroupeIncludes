@@ -1,0 +1,47 @@
+name: AI README Update
+
+on:
+  push:
+    branches: [ "main" ]
+    # Prevent infinite loop: the workflow itself modifies README.md
+    paths-ignore:
+      - "README.md"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Generate README changelog entry (AI)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # Optional: set to your preferred model name, or leave as default in script
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL }}
+        run: node .github/scripts/generate-readme-update.js
+
+      - name: Create Pull Request for README update
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "docs(readme): AI changelog update"
+          title: "docs(readme): AI changelog update"
+          body: |
+            This PR was generated automatically by GitHub Actions after a code change.
+            It updates README.md with a dated, time-stamped changelog entry describing the latest changes.
+          branch: "automation/ai-readme-update"
+          delete-branch: true
+          add-paths: |
+            README.md
